@@ -1,0 +1,1 @@
+perl /rhome/cjinfeng/HEG4_cjinfeng/MappingReads/bin/step1_Mapping_large.pl -ref /rhome/cjinfeng/HEG4_cjinfeng/MappingReads/input/MSU_r7.fa -1 /rhome/cjinfeng/HEG4_cjinfeng/fastq/errorcorrection/soapec/HEG4_0_500bp/FC52_7_1.fq -2 /rhome/cjinfeng/HEG4_cjinfeng/fastq/errorcorrection/soapec/HEG4_0_500bp/FC52_7_2.fq -min 406 -max 460 -cpu 12 -tool bwa -project ./FC52_7.MSU7_BWA

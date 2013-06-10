@@ -18,5 +18,10 @@ perl /rhome/cjinfeng/software/bin/qsub-pbs.pl --resource nodes=1:ppn=8,mem=13g,w
 perl /rhome/cjinfeng/software/bin/qsub-pbs.pl --resource nodes=1:ppn=1,mem=13g,walltime=100:00:00 MSU7_BWA4.sh > log 2> log2 &
 
 perl /rhome/cjinfeng/software/bin/qsub-pbs.pl --resource nodes=1:ppn=8,mem=10g,walltime=100:00:00 MSU7_BWA5.sh > log 2> log2 &
-perl /rhome/cjinfeng/software/bin/qsub-pbs.pl --resource nodes=1:ppn=30,mem=10g,walltime=100:00:00 MSU7_BWA.3_5k.sh > log 2> log2 &
+perl /rhome/cjinfeng/software/bin/qsub-pbs.pl --resource nodes=1:ppn=12,mem=10g,walltime=100:00:00 MSU7_BWA.3_5k.sh > log 2> log2 &
+
+
+echo "mPing"
+echo "get mping reads"
+perl runMapping.pl --ref ../input/mping.fa --project mPing > log 2> log2 &
 
