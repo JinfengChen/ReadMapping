@@ -25,3 +25,7 @@ echo "mPing"
 echo "get mping reads"
 perl runMapping.pl --ref ../input/mping.fa --project mPing > log 2> log2 &
 
+
+echo "EG4"
+perl runMapping.pl --ref ../input/MSU_r7.fa --lib in_libs.EG4_CLEAN.csv --group in_groups.EG4_CLEAN.csv --project EG4_CLEAN
+

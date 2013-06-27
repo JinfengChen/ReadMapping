@@ -1,11 +1,12 @@
 #!/usr/bin/perl
 use Getopt::Long;
+use File::Basename;
 
-GetOptions (\%opt,"ref:s","project:s","help");
+GetOptions (\%opt,"ref:s","lib:s","group:s","project:s","help");
 
 
 my $help=<<USAGE;
-perl $0 --ref
+perl $0 --ref ../input/MSU_r7.fa --lib in_libs.EG4_CLEAN.csv --group in_groups.EG4_CLEAN.csv --project EG4_CLEAN
 USAGE
 
 
@@ -16,9 +17,9 @@ if ($opt{help} or keys %opt < 1){
 
 $opt{project} ||= "map";
 
-my $reflib=readlib("in_libs.HEG4_RAW.csv");
-my $refgroup=readgroup("in_groups.HEG4_RAW.csv");
-my $script="/rhome/cjinfeng/HEG4_cjinfeng/MappingReads/bin/step1_Mapping.pl";
+my $reflib=readlib($opt{lib});
+my $refgroup=readgroup($opt{group});
+my $script="/rhome/cjinfeng/HEG4_cjinfeng/MappingReads/bin/step1_Mapping_large.pl";
 
 open OUT, ">$opt{project}.sh" or die "$!";
 foreach my $read (sort keys %$refgroup){
@@ -27,16 +28,14 @@ foreach my $read (sort keys %$refgroup){
    my $fq2=$read;
    $fq1=~s/\?/1/;
    $fq2=~s/\?/2/;
-   my $head;
-   if ($read=~ "HEG4.*\/(.*?)\.fq" ){
-      $head=$1;
-   }
+   my $head=$read=~/gz$/ ? basename($read,".fq.gz") : basename($read,".fq");
    $head=~s/\_p*\?//;
    print "$head\n";
    #print "$fq1\n$fq2\n";
    #print "$refgroup->{$read}\t$reflib->{$refgroup->{$read}}->[0]\t$reflib->{$refgroup->{$read}}->[1]\n";
-   my $min=$reflib->{$refgroup->{$read}}->[0]-$reflib->{$refgroup->{$read}}->[1];
-   my $max=$reflib->{$refgroup->{$read}}->[0]+$reflib->{$refgroup->{$read}}->[1];
+   my $min=$reflib->{$refgroup->{$read}}->[0]-7*$reflib->{$refgroup->{$read}}->[1];
+   my $max=$reflib->{$refgroup->{$read}}->[0]+7*$reflib->{$refgroup->{$read}}->[1];
+   $min = $min > 0 ? $min : 0;
    my $cmd="perl $script -ref $opt{ref} -1 $fq1 -2 $fq2 -min $min -max $max -cpu 30 -tool bwa -project ./$head\.$opt{project}";
    print OUT "$cmd\n";
 }

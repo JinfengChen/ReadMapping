@@ -71,8 +71,8 @@ if (exists $opt{1} and exists $opt{2}){
            #my $prefix=substr(basename($fqs[$i]),0,3);
            my $temp=basename($fqs[$i]);
            my $prefix=$1 if ($temp=~/^(p\d+)\./);
-           push @map, "$bwa/bwa aln -t $opt{cpu} $opt{ref} $fqs[$i] > $fqs[$i].sai 2> $fqs[$i].bwa.log2";
-           push @map, "$bwa/bwa aln -t $opt{cpu} $opt{ref} $fqs[$i+1] > $fqs[$i+1].sai 2> $fqs[$i+1].bwa.log2";
+           push @map, "$bwa/bwa aln -t 1 $opt{ref} $fqs[$i] > $fqs[$i].sai 2> $fqs[$i].bwa.log2";
+           push @map, "$bwa/bwa aln -t 1 $opt{ref} $fqs[$i+1] > $fqs[$i+1].sai 2> $fqs[$i+1].bwa.log2";
            push @map, "$bwa/bwa sampe -a $opt{max} $opt{ref} $fqs[$i].sai $fqs[$i+1].sai $fqs[$i] $fqs[$i+1] > $opt{output}/$prefix.sam 2> $opt{output}/$prefix.sampe.log2";
       }
       my $cmd1=join("\n",@map);
