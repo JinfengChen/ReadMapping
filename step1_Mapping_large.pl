@@ -2,6 +2,7 @@
 =header
 The scripts is designed to run bwa to map solexa sequencing read to reference genome.
 Fastq file is split into small files and use qsub to run in biocluster. So just run *.sh in local machine. *.sh could be generate by runMapping.pl.
+USE fullpath of files.
 --ref:   reference sequence
 --1:     paired read with -2, SRR034638_1.fastq
 --2:     paired read with -1, SRR034638_2.fastq
@@ -77,16 +78,20 @@ if (exists $opt{1} and exists $opt{2}){
       }
       my $cmd1=join("\n",@map);
       writefile("$opt{project}.map.sh","$cmd1\n");
-      `perl /rhome/cjinfeng/software/bin/qsub-pbs.pl --maxjob 20 --lines 3 --interval 120 --resource walltime=100:00:00 --convert no $opt{project}.map.sh`;
+      `perl /rhome/cjinfeng/software/bin/qsub-pbs.pl --maxjob 30 --lines 3 --interval 120 --resource walltime=100:00:00 --convert no $opt{project}.map.sh`;
 
       ### merge and clean tmp files
       my @merge;
-      push (@merge, "head -n 12 $opt{output}/p00.sam > $opt{output}.header") unless (-e "$opt{output}.header");
-      push (@merge, "cat $opt{output}/p*.sam | grep -v \"^@\" > $opt{output}.temp.sam") unless (-e "$opt{output}.temp.sam");
-      push (@merge, "cat $opt{output}.header $opt{output}.temp.sam > $opt{output}.sam") unless (-e "$opt{output}.sam");
+      unless (-e "$opt{output}.sam"){
+          push (@merge, "head -n 12 $opt{output}/p00.sam > $opt{output}.sam");
+          push (@merge, "cat $opt{output}/p*.sam | grep -v \"^@\" >> $opt{output}.sam");
+      }
+      #push (@merge, "head -n 12 $opt{output}/p00.sam > $opt{output}.header") unless (-e "$opt{output}.header");
+      #push (@merge, "cat $opt{output}/p*.sam | grep -v \"^@\" > $opt{output}.temp.sam") unless (-e "$opt{output}.temp.sam");
+      #push (@merge, "cat $opt{output}.header $opt{output}.temp.sam > $opt{output}.sam") unless (-e "$opt{output}.sam");
       push (@merge, "$SAMtool view -bS -o $opt{output}.raw.bam $opt{output}.sam > $opt{output}.convert.log 2> $opt{output}.convert.log2") unless (-e "$opt{output}.raw.bam");
-      push (@merge, "$SAMtool sort $opt{output}.raw.bam $opt{output}.sort > $opt{output}.sort.log 2> $opt{output}.sort.log2") unless (-e "$opt{output}.sort.bam");
-      push (@merge, "java -jar $rmdup ASSUME_SORTED=TRUE REMOVE_DUPLICATES=TRUE VALIDATION_STRINGENCY=LENIENT INPUT=$opt{output}.sort.bam OUTPUT=$opt{output}.bam METRICS_FILE=$opt{output}.dupli > $opt{output}.rmdup.log 2> $opt{output}.rmdup.log2") unless (-e "$opt{output}.bam");
+      push (@merge, "$SAMtool sort -m 1000000000 $opt{output}.raw.bam $opt{output}.sort > $opt{output}.sort.log 2> $opt{output}.sort.log2") unless (-e "$opt{output}.sort.bam");
+      push (@merge, "java -Xmx5G -jar $rmdup ASSUME_SORTED=TRUE REMOVE_DUPLICATES=TRUE VALIDATION_STRINGENCY=LENIENT INPUT=$opt{output}.sort.bam OUTPUT=$opt{output}.bam METRICS_FILE=$opt{output}.dupli > $opt{output}.rmdup.log 2> $opt{output}.rmdup.log2") unless (-e "$opt{output}.bam");
       my $cmd2=join("\n",@merge);
       writefile("$opt{project}.merge.sh","$cmd2\n");
       `perl /rhome/cjinfeng/software/bin/qsub-pbs.pl --lines 6 --interval 120  --resource walltime=100:00:00,mem=10G --convert no $opt{project}.merge.sh`;
@@ -94,7 +99,7 @@ if (exists $opt{1} and exists $opt{2}){
       ### clear tmp files
       my @clear;
       push @clear, "rm $opt{output}.sam $opt{output}.temp.sam $opt{output}.header $opt{output}.raw.bam $opt{output}.sort.bam";
-      push @clear, "rm $opt{output}.*.log* $opt{output}.dupli $opt{1}.sai $opt{1}.bwa.log2 $opt{2}.sai $opt{2}.bwa.log2";
+      push @clear, "rm $opt{output}.*.log* $opt{1}.sai $opt{1}.bwa.log2 $opt{2}.sai $opt{2}.bwa.log2";
       push @clear, "rm $opt{output} $opt{output}.map.sh* $opt{output}.split.sh* $opt{output}.merge.sh* -R";
       my $cmd3=join("\n",@clear);
       writefile("$opt{project}.clear.sh","$cmd3\n");

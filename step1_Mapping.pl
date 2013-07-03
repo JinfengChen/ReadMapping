@@ -51,7 +51,7 @@ if (exists $opt{1} and exists $opt{2}){
       `java -jar $rmdup ASSUME_SORTED=TRUE REMOVE_DUPLICATES=TRUE VALIDATION_STRINGENCY=LENIENT INPUT=$opt{project}.sort.bam OUTPUT=$opt{project}.bam METRICS_FILE=$opt{project}.dupli > $opt{project}.rmdup.log 2> $opt{project}.rmdup.log2`;
       unless ($opt{verbose}){
           `rm $opt{project}.sam $opt{project}.raw.bam $opt{project}.sort.bam`;
-          `rm $opt{project}.*.log* $opt{project}.dupli $opt{1}.sai $opt{1}.bwa.log2 $opt{2}.sai $opt{2}.bwa.log2`;
+          `rm $opt{project}.*.log* $opt{project} $opt{1}.sai $opt{1}.bwa.log2 $opt{2}.sai $opt{2}.bwa.log2`;
       }
       print "Done!\n";
    }elsif($opt{tool}=~/soap/){ # soap

@@ -6,7 +6,7 @@ GetOptions (\%opt,"ref:s","lib:s","group:s","project:s","help");
 
 
 my $help=<<USAGE;
-perl $0 --ref ../input/MSU_r7.fa --lib in_libs.EG4_CLEAN.csv --group in_groups.EG4_CLEAN.csv --project EG4_CLEAN
+perl $0 --ref /rhome/cjinfeng/HEG4_cjinfeng/MappingReads/input/MSU_r7.fa --lib in_libs.EG4_CLEAN.csv --group in_groups.EG4_CLEAN.csv --project EG4_CLEAN
 USAGE
 
 
